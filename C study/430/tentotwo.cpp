@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int tentotwo(int);
+void tentotwo(int);
 
 int main(void)
 {
@@ -14,15 +14,21 @@ int main(void)
 	return 0;		
 }
 
-int tentotwo(int num)
+void tentotwo(int num)
 {
-	int i;
+	
+	int i[10],x=0;
 	while(num>0)
 	{
-	i=num%2;
+	i[x]=num%2;
     num=num/2;
-    printf("%d",i);
+    printf("%d\n",num);
+    x++;
     }
+    printf("%d\n",x);
+    while(x>0)
+	{	x--;	
+	printf("%d",i[x]);
 	
-	
+    }
 }
