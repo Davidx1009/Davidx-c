@@ -1,0 +1,8 @@
+安裝/反安裝 app 程式流程
+1. 選擇起始-> 安裝?/ 反安裝 ? -> ( install()-> silent install command / uninstall() -> pnputil )
+2. 設定要測試的driver -> (driver安裝路徑/ check driver安裝完成的機制 (checkdriver() 用devcon 去做) )
+3. 設定次數/結束/停止條件
+4. restart 後繼續執行-> 設置flag/copy bat檔案到start up
+
+待學:
+check YB
