@@ -12,13 +12,44 @@ void installflag(void);
 void uninstallflag(void);
 int startup(char *,int);
 
-
-
 int main(int argc, char *argv[])
 {
-	FILE *config;
-	int i=0,dc=0,j=0,count=0,df;
-	char command[50][300],ch,folder[300];
+	FILE *config,*result;
+	int i=0,dc=0,j=0,count=0,df,cy;
+	char command[50][300],ch,folder[300],nu;
+	 /*==============================讀取result 開始==============================*/	
+	result=fopen("result.txt","r");
+	if(result == NULL)
+	result=fopen("result.txt","wt");
+	char cycle[6];
+
+	fread(cycle,sizeof(char),6,result);
+	fclose(result);
+
+		cy =atoi(cycle);
+system("CLS");
+		switch(flagcheck_setup())
+{
+	case 3:
+		printf("current cycle : 1 initializing Install\n");
+		cy++;
+		result=fopen("result.txt","wt");
+		fprintf(result,"%d",cy);
+		fclose(result);
+		break;
+	/*安裝流程*/	
+	case 1:	
+	cy++;
+	printf("current cycle : %d Installing driver\n",cy);
+	result=fopen("result.txt","wt");
+	fprintf(result,"%d",cy);
+	fclose(result);
+	break;
+	/*反安裝流程*/
+	case 2:
+	printf("current cycle : %d Uninstalling driver\n",cy);
+}
+	count =0;
                                    /*==============================讀取config 開始==============================*/	
 	config=fopen("config.txt","rb");
 		while((ch=getc(config)) != EOF)
@@ -33,6 +64,7 @@ int main(int argc, char *argv[])
 	fread(dp,sizeof(char),count,config);
 	}
 	fclose(config);
+	
 		/*初始需要自己輸入初值*/
 	if(argv[1] == NULL)
 	{
@@ -67,7 +99,7 @@ int main(int argc, char *argv[])
 /*把install driver 的執行指令抓出來分開放*/
 	while(dc<(df*2+1))
 	{ 	i=0;
-		printf("%d",dc);
+	
 		/*抓取執行指令的路徑*/
 			while(dp[j] != '\"')
 			{
@@ -85,7 +117,7 @@ int main(int argc, char *argv[])
 		
 			}
 			command[dc][i] = '\0'; 
-			printf("%c",dp[j]);
+		
 		j+=15;
 		dc++;
 		/*抓取執行指令*/
@@ -98,12 +130,9 @@ int main(int argc, char *argv[])
 		
 			}
 			command[dc][i] = '\0'; 
-			printf("%c",dp[j]);
+
 		j+=15;
 		dc++;
-		
-		
-		
 			
 	}
 /*把uninstall driver 的執行指令抓出來分開放*/
@@ -111,7 +140,6 @@ int main(int argc, char *argv[])
 	while(dc<((df*4)+1))
 	{ 	i=0;
 
-		printf("%d",dc);
 		/*抓取執行指令的路徑*/
 			while(dp[j] != '\"')
 			{
@@ -129,7 +157,7 @@ int main(int argc, char *argv[])
 		
 			}
 			command[dc][i] = '\0'; 
-			printf("%c",dp[j]);
+
 		j+=15;
 		dc++;
 		/*抓取執行指令*/
@@ -142,17 +170,16 @@ int main(int argc, char *argv[])
 		
 			}
 			command[dc][i] = '\0'; 
-			printf("%c",dp[j]);
-		j+=17;
-		dc++;
-			
-	}
-		printf("%d\n",dc);
-		for(i=0;i<dc;i++)
-	{	printf("%d\n",i);
-	printf("%s\n",command[i]);
 
+		j+=17;
+		dc++;		
 	}
+/* 抓取的數目跟路徑
+ 
+	for(i=0;i<dc;i++)
+	{	printf("%d\n",i);
+		printf("%s\n",command[i]);
+	}*/
                                               /*==============================讀取config 結束==============================*/	
 	
 	
@@ -166,7 +193,7 @@ int main(int argc, char *argv[])
 	
 	/*安裝流程*/
 	case 1:
-	printf("install process starting.\n");
+	printf("============================install process starting.============================\n");
 	Sleep(5000);
 	for(i=1;i<(dc/2)+1;i++)
 	{
@@ -191,7 +218,7 @@ int main(int argc, char *argv[])
 	break;
 	/*反安裝流程*/
 	case 2:
-	printf("uninstall process starting.\n");
+	printf("============================uninstall process starting.============================\n");
 	Sleep(5000);
 	for(i=(1+dc/2);i<dc+1;i++)
 	{
@@ -259,10 +286,9 @@ int startup(char *start,int a)
 FILE *f1;
 char b[10],e;
 int i=strlen(start);
-sprintf(b, "%d", a);
 f1=fopen("IUT.bat","wt");
 fprintf(f1,"cd %s",start);
-fprintf(f1,"\nIUT.exe %d",a);
+fprintf(f1,"\nIUTV1.exe %d",a);
 fclose(f1);
 
 system("xcopy IUT.bat \"C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\" /y");

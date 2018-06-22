@@ -1,3 +1,0 @@
-DriverPath="C:\playcard.exe"
-DriverPath="C:\sortingv2.exe"
-
