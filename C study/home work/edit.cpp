@@ -23,7 +23,7 @@ WORD current_screencolor;
 int kin[2];
 
 int main()
-{	int num,i=0,enterflag=0,changeline=0,ecount=1,line=1,tmpflag=0;
+{	int num,i=0,enterflag=0,changeline=0,ecount=1,line=1,tmpflag=0,firstword =0;
 	NODE *first,*current,*previous,*uplayer,*tmp,*move,*movetmp;
 	/* 保存目前的顏色狀態*/
 	GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
@@ -34,7 +34,7 @@ int main()
 	do
 	{	system("CLS");
 		if(i !=0)
-		current = first;		// 如果i不是0重置current的位置然後把整個文件重新印出來 
+		current = first;		// 如果i不是0,重置current的位置然後把整個文件重新印出來 
 		if(i==0)
 		move = current;
 	 
@@ -105,18 +105,27 @@ int main()
 		
 		if(current->worddata== 13) //enter鍵 換行 
 		{	
-		
-		current->left = previous; 
-		if(enterflag==0)
+			if(i=0)
+			{
+				uplayer = first;
+				current->left = first;
+				previous=first;
+				
+			}
+			else
+			{
+			current->left = previous; 
+			if(enterflag==0)
 			uplayer = traceback(current, i);
-		else
+			else
 			uplayer = traceback(current, ecount);
-		
+			}
 		current->worddata='\n'; 
 		enterflag =1; //enter flag 為1前都是第一行的資料 
 		changeline=1;
-		
+		firstword =0;
 		}
+	
 	if(kin[1] != 72 && kin[1] != 75 && kin[1] != 77 && kin[1] != 80 ) 
 	{
 			if(enterflag ==0)
@@ -161,27 +170,47 @@ int main()
 		{		
 		   if(changeline==1 && line == 1)
 			{
-			previous->right = current;
-			previous->left =tmp; 
+				if(i==0)
+				previous =current;
+				else
+				previous->right = current;
+	
+			previous->left =tmp;
+			 
 			previous->up = NULL;
 			previous->down = NULL;
+			changeline = 2;
+			firstword =1;
+		
 			}
-			else
+			else if(changeline==2 && line == 1 && firstword ==1)
+			{ 	
+			previous->right = current;
+			previous->left =tmp->left; 
+			previous->up = NULL;
+			previous->down = NULL;
+				changeline=0;
+				firstword =0;
+			}
+			else 
 			{ 
+			//printf("data= %c,", uplayer->worddata);
 			previous->right = current;
 			previous->left =tmp; 
-			previous->up = uplayer;
+			//previous->up = uplayer;
 			previous->down = NULL;
-			uplayer->down =previous;
+			//uplayer->down =previous;
 			}
-				
+			
 			current->right = NULL;	
 			current->down = NULL;
 			current->up = uplayer;
+			uplayer->down = current;
 			current->left = previous;
 			tmp=previous;
 			
 			previous = current;
+			if(firstword != 1)
 			uplayer =uplayer->right;
 			if(changeline==1)
 				{
@@ -191,6 +220,8 @@ int main()
 			ecount++;
 			if(kin[1] != 72 && kin[1] != 75 && kin[1] != 77 && kin[1] != 80 ) 
 			move = current;
+			
+			
 		}
 	}
 	}while(current->worddata != 27);
