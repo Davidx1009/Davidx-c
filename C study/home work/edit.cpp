@@ -17,15 +17,18 @@ NODE *traceback(NODE *, int );
 void colorit(void);
 void uncolorit(void);
 NODE *tracen(NODE *);
+void normalmove(void);
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //為GetConsoleScreenBufferInfo取得一個有GENERIC_READ access的參數 
 CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
 WORD current_screencolor;
 int kin[2];
 
+int num,i=0,enterflag=0,changeline=0,ecount=0,line=1,tmpflag=0,firstword =0,wordtmp=0,nflag=0;
+NODE *first,*current,*previous,*uplayer,*tmp,*move,*movetmp,*ntmp;
+
 int main()
-{	int num,i=0,enterflag=0,changeline=0,ecount=0,line=1,tmpflag=0,firstword =0,wordtmp=0,nflag=0;
-	NODE *first,*current,*previous,*uplayer,*tmp,*move,*movetmp,*ntmp;
+{
 	/* 保存目前的顏色狀態*/
 	GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
     current_screencolor = consoleInfo.wAttributes;
@@ -54,6 +57,81 @@ int main()
 		}	
 		 
 			current =(NODE *)malloc(sizeof(NODE)); 
+			
+		normalmove();
+	
+	}while(current->worddata != 27);
+		current->worddata ='\0';
+		current = previous; 
+	
+/*	while(current !=NULL)
+	{	
+		printf("adress= %p, " ,current);
+		printf("data= %c,", current->worddata);
+		printf("before= %p\n, " ,current->left);
+		
+	
+		current = current->left;
+		
+	}
+*/	
+
+	system("pause");
+	return 0;
+	
+}
+/*換行時為了把uplayer 寫到該行的第一格*/
+NODE * traceback(NODE *trace, int a)
+{	int j;
+	NODE *tracetmp;
+	//printf("%d\n",a);	
+	
+	for(j=0;j<a;j++)
+	{/*	printf("===before==\n");
+		printf("adress= %p, " ,trace);
+		printf("data= %c,", trace->worddata);
+		printf("next= %p\n, " ,trace->left);
+	*/	
+		tracetmp = trace->left;
+		trace = tracetmp;
+		/*	printf("===after==\n");
+			printf("adress= %p, " ,trace);
+			printf("data= %c,", trace->worddata);
+			printf("adress= %p\n, " ,trace);
+		*/	
+	}
+
+	return trace;
+	
+}
+/*找上一個換行字元\n
+NODE * tracen(NODE *trace)
+{	int j;
+	NODE *tracetmp;
+	while(trace->worddata != '\n')
+	{
+		tracetmp = trace->left;
+		trace = tracetmp;
+	
+	}
+	
+	return trace->left;
+}
+*/
+void colorit()
+{ 		
+    SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE|FOREGROUND_INTENSITY); //改變系統顏色// 
+	
+}
+
+//=============把系統顏色調回去=================//
+void uncolorit()
+{	
+	SetConsoleTextAttribute(hConsole, current_screencolor);	
+}
+
+void normalmove()
+{
 	re:
 	kin[0] =	getch();
     if(kin[0]== 224 || kin[0]== 0) //因為某些鍵會輸出2組key code ex:F1,2,3,4....up,left.... 所以設2個暫存給 keyin   //
@@ -207,7 +285,7 @@ int main()
 			tmp=previous;
 			
 			previous = current;
-			if(kin[1] != 72 && kin[1] != 75 && kin[1] != 77 && kin[1] != 80 ) 
+			if(kin[1] != 72 && kin[1] != 75 && kin[1] != 77 && kin[1] != 80 && tmpflag != 1 ) 
 			move = current;
 			i++;
 	    }
@@ -296,79 +374,13 @@ int main()
 				}
 			i++;
 			//ecount++;
-			if(kin[1] != 72 && kin[1] != 75 && kin[1] != 77 && kin[1] != 80 ) 
+			if(kin[1] != 72 && kin[1] != 75 && kin[1] != 77 && kin[1] != 80 && tmpflag != 1 ) 
 			move = current;
 			
 		
 		}
 	}
-	}while(current->worddata != 27);
-		current->worddata ='\0';
-		current = previous; 
-	
-/*	while(current !=NULL)
-	{	
-		printf("adress= %p, " ,current);
-		printf("data= %c,", current->worddata);
-		printf("before= %p\n, " ,current->left);
-		
-	
-		current = current->left;
-		
-	}
-*/	
-
-	system("pause");
-	return 0;
-	
-}
-/*換行時為了把uplayer 寫到該行的第一格*/
-NODE * traceback(NODE *trace, int a)
-{	int j;
-	NODE *tracetmp;
-	//printf("%d\n",a);	
-	
-	for(j=0;j<a;j++)
-	{/*	printf("===before==\n");
-		printf("adress= %p, " ,trace);
-		printf("data= %c,", trace->worddata);
-		printf("next= %p\n, " ,trace->left);
-	*/	
-		tracetmp = trace->left;
-		trace = tracetmp;
-		/*	printf("===after==\n");
-			printf("adress= %p, " ,trace);
-			printf("data= %c,", trace->worddata);
-			printf("adress= %p\n, " ,trace);
-		*/	
-	}
-
-	return trace;
-	
-}
-/*找上一個換行字元\n*/
-NODE * tracen(NODE *trace)
-{	int j;
-	NODE *tracetmp;
-	while(trace->worddata != '\n')
-	{
-		tracetmp = trace->left;
-		trace = tracetmp;
-		printf("2");
-	}
-	
-	return trace->left;
-}
-
-void colorit()
-{ 		
-    SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE|FOREGROUND_INTENSITY); //改變系統顏色// 
 	
 }
 
-//=============把系統顏色調回去=================//
-void uncolorit()
-{	
-	SetConsoleTextAttribute(hConsole, current_screencolor);	
-}
 
